@@ -2,23 +2,24 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public float moveSpeed = 2f;
-    private Transform player;
+    public int xpReward = 100;
 
-    void Start()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null)
+        if (other.CompareTag("Bullet"))
         {
-            player = playerObj.transform;
+            Die();
         }
     }
 
-    void Update()
+    void Die()
     {
-        if (player == null) return;
+        PlayerXP playerXP = GameObject.FindWithTag("Player")?.GetComponent<PlayerXP>();
+        if (playerXP != null)
+        {
+            playerXP.AddXP(xpReward);
+        }
 
-        Vector2 direction = (player.position - transform.position).normalized;
-        transform.position += (Vector3)direction * moveSpeed * Time.deltaTime;
+        Destroy(gameObject);
     }
 }

@@ -10,7 +10,6 @@ public class PlayerShooting : MonoBehaviour
     private float fireTimer;
     private bool isShooting;
     private PlayerControls controls;
-
     public SpriteRenderer spriteRenderer;
 
     void Awake()
