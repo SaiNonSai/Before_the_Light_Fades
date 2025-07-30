@@ -7,6 +7,8 @@ public class Bullet : MonoBehaviour
 
     private Vector2 direction;
 
+    public int damage = 10;
+
     public void SetDirection(Vector2 dir)
     {
         direction = dir.normalized;

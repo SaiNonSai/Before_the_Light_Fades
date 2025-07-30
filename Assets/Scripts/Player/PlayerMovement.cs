@@ -33,4 +33,11 @@ public class PlayerMovement : MonoBehaviour
         bool isMoving = moveInput.sqrMagnitude > 0.1f;
         animator.SetBool("isFlying", isMoving);
     }
+
+    public void IncreaseMoveSpeed(float amount)
+    {
+        moveSpeed += amount;
+        Debug.Log($"[Upgrade] Move Speed increased by {amount}. New speed: {moveSpeed}");
+    }
+
 }

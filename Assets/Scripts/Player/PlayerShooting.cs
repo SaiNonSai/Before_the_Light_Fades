@@ -12,6 +12,11 @@ public class PlayerShooting : MonoBehaviour
     private PlayerControls controls;
     public SpriteRenderer spriteRenderer;
 
+    //upgrades
+    public int bulletDamage = 10;
+    public bool isMultishotEnabled = false;
+
+
     void Awake()
     {
         controls = new PlayerControls();
@@ -38,11 +43,38 @@ public class PlayerShooting : MonoBehaviour
         {
             Vector2 direction = (mousePos - firePoint.position).normalized;
 
-            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-            bullet.GetComponent<Bullet>().SetDirection(direction);
+            if (isMultishotEnabled)
+            {
+                FireBullet(direction);
+                FireBullet(Quaternion.Euler(0, 0, 15) * direction);
+                FireBullet(Quaternion.Euler(0, 0, -15) * direction);
+            }
+            else
+            {
+                FireBullet(direction);
+            }
 
             fireTimer = 0f;
         }
+
+    }
+
+    void FireBullet(Vector2 direction)
+    {
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        bulletScript.SetDirection(direction);
+        bulletScript.damage = bulletDamage;
+    }
+
+    public void IncreaseBulletDamage(int amount)
+    {
+        bulletDamage += amount;
+    }
+
+    public void EnableMultishot()
+    {
+        isMultishotEnabled = true;
     }
 
 }

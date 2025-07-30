@@ -5,19 +5,45 @@ using System.Collections.Generic;
 
 public class UpgradeManager : MonoBehaviour
 {
+    [Header("UI References")]
     public GameObject upgradePanel;
     public Button[] upgradeButtons;
     public TextMeshProUGUI[] buttonTexts;
 
-    public List<Upgrade> allUpgrades;
+    [Header("Upgrade Options")]
+    public List<Upgrade> allUpgrades = new List<Upgrade>();
 
     private PlayerXP playerXP;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerXP = GameObject.FindWithTag("Player")?.GetComponent<PlayerXP>();
         upgradePanel.SetActive(false);
+
+        // Optional: define upgrades in code (or populate via Inspector)
+        if (allUpgrades.Count == 0)
+        {
+            allUpgrades.Add(new Upgrade
+            {
+                upgradeName = "Speed Boost",
+                description = "Move faster!",
+                type = UpgradeType.MoveSpeed
+            });
+
+            allUpgrades.Add(new Upgrade
+            {
+                upgradeName = "Stronger Bullets",
+                description = "Deal more damage!",
+                type = UpgradeType.BulletDamage
+            });
+
+            allUpgrades.Add(new Upgrade
+            {
+                upgradeName = "Multishot",
+                description = "Fire 3 bullets at once!",
+                type = UpgradeType.Multishot
+            });
+        }
     }
 
     public void ShowUpgrades()
@@ -41,31 +67,47 @@ public class UpgradeManager : MonoBehaviour
                 ClosePanel();
             });
         }
+    }
 
-        void ApplyUpgrade(Upgrade upgrade)
+    void ApplyUpgrade(Upgrade upgrade)
+    {
+        GameObject player = GameObject.FindWithTag("Player");
+
+        Debug.Log($"[Upgrade] Applied: {upgrade.upgradeName} — {upgrade.description}");
+
+        switch (upgrade.type)
         {
-            Debug.Log($"Applied upgrade: {upgrade.upgradeName}");
-            // TODO: Implement real effects here
+            case UpgradeType.MoveSpeed:
+                player.GetComponent<PlayerMovement>()?.IncreaseMoveSpeed(2f);
+                break;
+
+            case UpgradeType.BulletDamage:
+                player.GetComponent<PlayerShooting>()?.IncreaseBulletDamage(10);
+                break;
+
+            case UpgradeType.Multishot:
+                player.GetComponent<PlayerShooting>()?.EnableMultishot();
+                break;
+        }
+    }
+
+
+    void ClosePanel()
+    {
+        Time.timeScale = 1f;
+        upgradePanel.SetActive(false);
+    }
+
+    List<Upgrade> GetRandomUpgrades(int count)
+    {
+        List<Upgrade> shuffled = new List<Upgrade>(allUpgrades);
+
+        for (int i = 0; i < shuffled.Count; i++)
+        {
+            int rand = Random.Range(i, shuffled.Count);
+            (shuffled[i], shuffled[rand]) = (shuffled[rand], shuffled[i]);
         }
 
-        void ClosePanel()
-        {
-            Time.timeScale = 1f;
-            upgradePanel.SetActive(false);
-        }
-
-        List<Upgrade> GetRandomUpgrades(int count)
-        {
-            List<Upgrade> shuffled = new List<Upgrade>(allUpgrades);
-            for (int i = 0; i < shuffled.Count; i++)
-            {
-                Upgrade temp = shuffled[i];
-                int rand = Random.Range(i, shuffled.Count);
-                shuffled[i] = shuffled[rand];
-                shuffled[rand] = temp;
-            }
-
-            return shuffled.GetRange(0, Mathf.Min(count, shuffled.Count));
-        }
+        return shuffled.GetRange(0, Mathf.Min(count, shuffled.Count));
     }
 }
