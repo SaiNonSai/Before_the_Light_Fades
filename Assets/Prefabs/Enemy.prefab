@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2437572580330359268}
   - component: {fileID: 3773718869223617648}
   - component: {fileID: 7573181183514023719}
+  - component: {fileID: -1677945718728915679}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -121,7 +122,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -181,3 +182,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 8438894822075375686, guid: cb625bd81942a1441a8ddf8814280664, type: 3}
   shootInterval: 2
+--- !u!114 &-1677945718728915679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4043412347933955132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc730fa2784277b48b9a9cebe2c21b9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 10
