@@ -11,7 +11,7 @@ public class EnemyBullet : MonoBehaviour
     public void SetDirection(Vector2 dir)
     {
         direction = dir.normalized;
-        Destroy(gameObject, lifetime); // Destroy after time
+        Destroy(gameObject, lifetime); // Backup auto-destroy
     }
 
     void Update()
@@ -29,7 +29,12 @@ public class EnemyBullet : MonoBehaviour
                 player.TakeDamage(damage);
             }
 
-            Destroy(gameObject); // destroy bullet
+            Destroy(gameObject);
         }
+    }
+
+    void OnBecameInvisible()
+    {
+        Destroy(gameObject);
     }
 }

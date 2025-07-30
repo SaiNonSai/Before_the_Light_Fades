@@ -3,37 +3,33 @@ using UnityEngine.InputSystem;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform target; // Assign the Player in the Inspector
-    public float smoothSpeed = 5f; // Higher = faster camera
-    public Vector3 offset = new Vector3(0f, 0f, -10f); // 2D camera default
+    public Transform target; // Assign player
+    public float smoothSpeed = 10f;
+    public Vector3 offset = new Vector3(0f, 0f, -10f); // z = -10 for 2D camera
 
     public float mouseOffsetStrength = 2f;
-    public float maxMouseOffset = 3f; // Clamp the max displacement
+    public float maxMouseOffset = 3f;
 
     void LateUpdate()
     {
-        if (target == null) return;
+        if (target == null || Camera.main == null) return;
 
-        // Use Input System to get mouse position
+        // Get mouse position in world space
         Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
         mouseWorldPos.z = 0f;
 
         // Direction vector from player to mouse
-        Vector3 directionToMouse = (mouseWorldPos - target.position).normalized;
+        Vector3 displacement = (mouseWorldPos - target.position).normalized * mouseOffsetStrength;
 
-        // Mouse offset scaled by strength
-        Vector3 mouseOffset = directionToMouse * mouseOffsetStrength;
+        // Clamp the displacement vector to prevent extreme offset
+        displacement = Vector3.ClampMagnitude(displacement, maxMouseOffset);
 
-        // Optional: Clamp offset so it's not too far
-        if (mouseOffset.magnitude > maxMouseOffset)
-            mouseOffset = mouseOffset.normalized * maxMouseOffset;
+        // Final target position = player center + offset + mouse pull
+        Vector3 desiredPosition = target.position + offset + displacement;
+        desiredPosition.z = offset.z; // ensure correct z
 
-        // Final camera target position
-        Vector3 desiredPosition = target.position + offset + mouseOffset;
-        desiredPosition.z = offset.z;
-
-        // Smoothly move the camera
+        // Smooth follow
         transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
     }
 }
