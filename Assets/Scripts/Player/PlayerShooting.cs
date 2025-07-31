@@ -1,5 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerShooting : MonoBehaviour
 {
@@ -16,6 +19,18 @@ public class PlayerShooting : MonoBehaviour
     public int bulletDamage = 10;
     public bool isMultishotEnabled = false;
 
+    //bullets
+    public int magazineSize = 20;
+    public int currentAmmo;
+    public float reloadTime = 2f;
+    private bool isReloading = false;
+
+    public TextMeshProUGUI ammoText;
+
+    void Start()
+    {
+        currentAmmo = magazineSize;
+    }
 
     void Awake()
     {
@@ -39,7 +54,7 @@ public class PlayerShooting : MonoBehaviour
         spriteRenderer.flipX = mousePos.x < transform.position.x;
 
         // Fire bullet
-        if (isShooting && fireTimer >= fireCooldown)
+        if (isShooting && fireTimer >= fireCooldown && !isReloading && currentAmmo > 0)
         {
             Vector2 direction = (mousePos - firePoint.position).normalized;
 
@@ -48,15 +63,38 @@ public class PlayerShooting : MonoBehaviour
                 FireBullet(direction);
                 FireBullet(Quaternion.Euler(0, 0, 15) * direction);
                 FireBullet(Quaternion.Euler(0, 0, -15) * direction);
+                currentAmmo -= 3;
             }
             else
             {
                 FireBullet(direction);
+                currentAmmo--;
             }
 
             fireTimer = 0f;
+
+            if (currentAmmo <= 0)
+            {
+                StartCoroutine(Reload());
+            }
         }
 
+        if (ammoText != null)
+        {
+            ammoText.text = isReloading ? "Reloading..." : $"{currentAmmo} / {magazineSize}";
+        }
+    }
+
+    IEnumerator Reload()
+    {
+        isReloading = true;
+        Debug.Log("Reloading...");
+
+        yield return new WaitForSeconds(reloadTime);
+
+        currentAmmo = magazineSize;
+        isReloading = false;
+        Debug.Log("Reload complete.");
     }
 
     void FireBullet(Vector2 direction)
